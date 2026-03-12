@@ -6,6 +6,7 @@ The script allows you to query catalogue records using:
 - a spatial bounding box
 - a temporal extent (dataset coverage)
 - an optional free‑text search term
+- an optional coordinate search when attached to metadata record
 
 The function returns matching records as a Pandas DataFrame.
 
