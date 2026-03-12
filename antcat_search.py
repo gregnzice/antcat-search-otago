@@ -1,6 +1,10 @@
 import requests
 import pandas as pd
 
+import requests
+import pandas as pd
+import re
+
 def gn_antcat_search(
     bbox,
     date_from,
@@ -9,7 +13,8 @@ def gn_antcat_search(
     *,
     page_size=500,
     spatial_relation="intersects",
-    time_relation="intersects"
+    time_relation="intersects",
+    fetch_points=False
 ):
     """
     Query AntCat GeoNetwork using:
@@ -26,6 +31,7 @@ def gn_antcat_search(
         start_date
         end_date
         geom
+        points         (list of (lat, lon) tuples, only if fetch_points=True)
         record_url
     """
 
@@ -64,6 +70,34 @@ def gn_antcat_search(
         except:
             return None, None
 
+    def build_text_clause(term):
+        terms = term.strip().split()
+        if len(terms) > 1:
+            return f'+anytext:"{term}"'   # phrase match
+        else:
+            return f'+anytext:{term}'     # single token match
+
+    def parse_point_geometries(uuid):
+        """
+        Fetch full XML record and extract all gml:Point coordinates.
+        Returns list of (lat, lon) tuples.
+        Note: gml:pos is ordered lat lon (not lon lat).
+        """
+        url = f"{BASE}/srv/api/records/{uuid}/formatters/xml"
+        try:
+            resp = requests.get(url, headers={"accept": "application/xml"})
+            resp.raise_for_status()
+            matches = re.findall(r'<gml:pos[^>]*>([\-\d\.\s]+)</gml:pos>', resp.text)
+            points = []
+            for m in matches:
+                parts = m.strip().split()
+                if len(parts) == 2:
+                    lat, lon = float(parts[0]), float(parts[1])
+                    points.append((lat, lon))
+            return points
+        except:
+            return []
+
     env = envelope_from_bbox(*bbox)
 
     def build_payload(offset):
@@ -95,7 +129,7 @@ def gn_antcat_search(
 
         if search_term:
             bool_query["must"] = [
-                {"query_string": {"query": f'+anytext:"{search_term}"'}}
+                {"query_string": {"query": build_text_clause(search_term)}}
             ]
 
         return {
@@ -133,21 +167,26 @@ def gn_antcat_search(
         for h in hits:
             src = h.get("_source", {})
             title_obj = src.get("resourceTitleObject") or {}
-            abs_obj = src.get("resourceAbstractObject") or {}
+            abs_obj   = src.get("resourceAbstractObject") or {}
 
-            uuid = src.get("uuid")
+            uuid     = src.get("uuid")
             temporal = src.get("resourceTemporalExtentDateRange")
 
             start, end = parse_temporal_extent(temporal)
 
-            all_rows.append({
-                "title": title_obj.get("default") or title_obj.get("langeng"),
-                "abstract": abs_obj.get("default") or abs_obj.get("langeng"),
+            row = {
+                "title":      title_obj.get("default") or title_obj.get("langeng"),
+                "abstract":   abs_obj.get("default")   or abs_obj.get("langeng"),
                 "start_date": start,
-                "end_date": end,
-                "geom": src.get("geom"),
+                "end_date":   end,
+                "bounding_box":       src.get("geom"),
                 "record_url": f"{BASE}/srv/eng/catalog.search#/metadata/{uuid}"
-            })
+            }
+
+            if fetch_points:
+                row["coordinate"] = parse_point_geometries(uuid)
+
+            all_rows.append(row)
 
         offset += len(hits)
 
@@ -159,4 +198,10 @@ def gn_antcat_search(
     df["start_date"] = pd.to_datetime(df["start_date"], errors="coerce")
     df["end_date"]   = pd.to_datetime(df["end_date"],   errors="coerce")
 
+    if fetch_points:
+        df["coordinate"] = df["coordinate"].apply(lambda x: pd.NA if isinstance(x, list) and len(x) == 0 else x)
+
+    cols = [c for c in df.columns if c != "record_url"] + ["record_url"]
+    df = df[cols]
+    
     return df
