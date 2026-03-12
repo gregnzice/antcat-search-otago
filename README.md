@@ -24,13 +24,10 @@ with open("antcat_search.py", "wb") as f:
     f.write(requests.get(url).content)
 ```
 
-### 2. Import the Function
+### 2. Example Usage
 ```python
 from antcat_search import gn_antcat_search
-```
 
-### 3. Example Usage
-```python
 ds = gn_antcat_search(
     bbox=(158, -78.3, 175, -75.7),
     date_from="2015-01-01",
