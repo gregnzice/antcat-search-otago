@@ -36,7 +36,8 @@ ds_ctd = gn_antcat_search(
     date_from="2015-01-01",
     date_to="2020-12-31",
     search_term="ctd",
-    fetch_points=True
+    fetch_points=True,
+    fetch_author=True
 )
 
 ds_mooring = gn_antcat_search(
@@ -44,7 +45,8 @@ ds_mooring = gn_antcat_search(
     date_from="2015-01-01",
     date_to="2020-12-31",
     search_term="mooring",
-    fetch_points=True
+    fetch_points=True,
+    fetch_author=True
 )
 
 ds_seaice = gn_antcat_search(
@@ -52,7 +54,8 @@ ds_seaice = gn_antcat_search(
     date_from="2015-01-01",
     date_to="2020-12-31",
     search_term="sea ice",
-    fetch_points=True
+    fetch_points=True,
+    fetch_author=True
 )
 
 ds_combined = (
