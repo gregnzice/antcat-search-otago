@@ -6,7 +6,6 @@ The script allows you to query catalogue records using:
 - a spatial bounding box
 - a temporal extent (dataset coverage)
 - an optional free‑text search term
-- an optional coordinate search when attached to metadata record
 
 The function returns matching records as a Pandas DataFrame.
 
@@ -35,27 +34,21 @@ ds_ctd = gn_antcat_search(
     bbox=(158, -78.3, 175, -75.7),
     date_from="2015-01-01",
     date_to="2020-12-31",
-    search_term="ctd",
-    fetch_points=True,
-    fetch_author=True
+    search_term="ctd"
 )
 
 ds_mooring = gn_antcat_search(
     bbox=(158, -78.3, 175, -75.7),
     date_from="2015-01-01",
     date_to="2020-12-31",
-    search_term="mooring",
-    fetch_points=True,
-    fetch_author=True
+    search_term="mooring"
 )
 
 ds_seaice = gn_antcat_search(
     bbox=(158, -78.3, 175, -75.7),
     date_from="2015-01-01",
     date_to="2020-12-31",
-    search_term="sea ice",
-    fetch_points=True,
-    fetch_author=True
+    search_term="sea ice"
 )
 
 ds_combined = (
