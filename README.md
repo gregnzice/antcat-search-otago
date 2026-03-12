@@ -27,12 +27,38 @@ with open("antcat_search.py", "wb") as f:
 ### 2. Example Usage
 ```python
 from antcat_search import gn_antcat_search
+import pandas as pd
+pd.set_option("display.max_colwidth", None)  # show full column contents
 
-ds = gn_antcat_search(
+ds_ctd = gn_antcat_search(
     bbox=(158, -78.3, 175, -75.7),
     date_from="2015-01-01",
     date_to="2020-12-31",
-    search_term="sea ice"
+    search_term="ctd",
+    fetch_points=True
 )
-ds
+
+ds_mooring = gn_antcat_search(
+    bbox=(158, -78.3, 175, -75.7),
+    date_from="2015-01-01",
+    date_to="2020-12-31",
+    search_term="mooring",
+    fetch_points=True
+)
+
+ds_seaice = gn_antcat_search(
+    bbox=(158, -78.3, 175, -75.7),
+    date_from="2015-01-01",
+    date_to="2020-12-31",
+    search_term="sea ice",
+    fetch_points=True
+)
+
+ds_combined = (
+    pd.concat([ds_seaice, ds_ctd, ds_mooring])
+    .drop_duplicates(subset="record_url")
+    .reset_index(drop=True)
+)
+
+ds_combined
 ```
