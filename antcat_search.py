@@ -12,8 +12,8 @@ def gn_antcat_search(
     page_size=500,
     spatial_relation="intersects",
     time_relation="intersects",
-    fetch_points=False,
-    fetch_author=False
+    fetch_points=True,
+    fetch_author=True
 ):
     """
     Query AntCat GeoNetwork using:
@@ -31,8 +31,8 @@ def gn_antcat_search(
         page_size        : int  - Number of results per page (default 500)
         spatial_relation : str  - Spatial relation (default "intersects")
         time_relation    : str  - Temporal relation (default "intersects")
-        fetch_points     : bool - Fetch point geometries from XML (default False)
-        fetch_author     : bool - Fetch author name from XML (default False)
+        fetch_points     : bool - Fetch point geometries from XML (default True)
+        fetch_author     : bool - Fetch author name from XML (default True)
 
     Returns:
         title
