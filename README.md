@@ -13,28 +13,24 @@ The function returns matching records as a Pandas DataFrame.
 
 ## Getting Started (Notebook Workflow)
 
-Use the following in a Jupyter notebook to:
-- Download the script from GitHub
-- Import the search function
-- Run a query
-- View the results
+Use the following in a Jupyter notebook to download the script from GitHub, import the search function, run a query, and view the results.
+
+### 1. Download the Script
 ```python
 import requests
 
-# Download script from GitHub
 url = "https://raw.githubusercontent.com/antarcticanz/antcat-search/main/antcat_search.py"
 with open("antcat_search.py", "wb") as f:
     f.write(requests.get(url).content)
+```
 
-# Import function
+### 2. Import the Function
+```python
 from antcat_search import gn_antcat_search
-` `` 
+```
 
----
-
-## Example Usage
-
-` ``python
+### 3. Example Usage
+```python
 ds = gn_antcat_search(
     bbox=(158, -78.3, 175, -75.7),
     date_from="2015-01-01",
@@ -42,7 +38,4 @@ ds = gn_antcat_search(
     search_term="sea ice"
 )
 ds
-` ``
 ```
-
-Save this as `README.md` and it'll render with proper copy-able code blocks on GitHub. I also updated `text=` to `search_term=` to match your rename.
