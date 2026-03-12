@@ -5,7 +5,7 @@ def gn_antcat_search(
     bbox,
     date_from,
     date_to,
-    text=None,
+    search_term=None,
     *,
     page_size=500,
     spatial_relation="intersects",
@@ -93,9 +93,9 @@ def gn_antcat_search(
             ]
         }
 
-        if text:
+        if search_term:
             bool_query["must"] = [
-                {"query_string": {"query": f'+anytext:"{text}"'}}
+                {"query_string": {"query": f'+anytext:"{search_term}"'}}
             ]
 
         return {
